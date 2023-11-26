@@ -11,7 +11,7 @@ export type TCountersName = 'user';
   toObject: { virtuals: true },
 })
 export class Counters {
-  @Prop({ default: 0 })
+  @Prop({ default: 1 })
   user: number;
 }
 

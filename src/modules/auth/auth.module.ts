@@ -8,6 +8,7 @@ import { AuthController } from './auth.controller';
 import { UserModule } from '..//users/users.module';
 import { TokensService } from './tokens.service';
 import { AccessTokenStrategy, RefreshTokenStrategy } from './auth.strategies';
+import { AwsModule } from '../helpers/aws/aws.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AccessTokenStrategy, RefreshTokenStrategy } from './auth.strategies';
       secret: process.env.JWT_SECRET_KEY,
     }),
 
+    AwsModule,
     UserModule,
   ],
   controllers: [AuthController],

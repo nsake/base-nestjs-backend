@@ -14,27 +14,19 @@ export class TokensService {
     private usersService: UsersService,
     private configService: ConfigService,
   ) {}
-  async generateTokensAndUpdate(user) {
+  public async generateTokensAndUpdate(user) {
     const tokens = await this.generateTokens(user._id, user.email);
+
     await this.updateRefreshToken(user._id, tokens.refreshToken);
 
     return tokens;
   }
 
-  hashData(data: string) {
-    return argon2.hash(data);
-  }
+  public async refreshTokens(userId: string, refreshToken: string) {
+    const user = await this.usersService
+      .findById(userId)
+      .select('refreshToken');
 
-  async updateRefreshToken(userId: string, refreshToken: string) {
-    const hashedRefreshToken = await this.hashData(refreshToken);
-
-    await this.usersService.findOneByIdAndUpdate(userId, {
-      refreshToken: hashedRefreshToken,
-    });
-  }
-
-  async refreshTokens(userId: string, refreshToken: string) {
-    const user = await this.usersService.findById(userId);
     if (!user || !user.refreshToken)
       throw new ForbiddenException('Access Denied');
 
@@ -48,10 +40,24 @@ export class TokensService {
     const tokens = await this.generateTokens(userId, user.email);
 
     await this.updateRefreshToken(userId, tokens.refreshToken);
+
     return tokens;
   }
 
-  async generateTokens(userId: string, email: string) {
+  // Private methods of token service
+  private async updateRefreshToken(userId: string, refreshToken: string) {
+    const hashedRefreshToken = await this.hashData(refreshToken);
+
+    await this.usersService.findOneByIdAndUpdate(userId, {
+      refreshToken: hashedRefreshToken,
+    });
+  }
+
+  private hashData(data: string) {
+    return argon2.hash(data);
+  }
+
+  private async generateTokens(userId: string, email: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
@@ -75,6 +81,8 @@ export class TokensService {
         },
       ),
     ]);
+
+    await this.usersService.findOneByIdAndUpdate(userId, { refreshToken });
 
     return {
       accessToken,

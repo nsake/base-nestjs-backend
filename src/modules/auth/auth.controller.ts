@@ -1,5 +1,13 @@
 import { FastifyRequest } from 'fastify';
-import { Controller, Post, UseGuards, Body, Get, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Body,
+  Get,
+  Req,
+  UseInterceptors,
+} from '@nestjs/common';
 
 import { SignUpDto } from './auth.dto';
 import { AuthService } from './auth.service';
@@ -23,14 +31,9 @@ export class AuthController {
 
   @UseGuards(AccessTokenGuard)
   @Post('upload-kyc-selfie')
-  async uploadKYCSelfie(@CurrentUser('id') id: string, @File() file: File) {
-    console.log(id, file);
+  async uploadKYCSelfie(@CurrentUser('id') userId: string, @File() file: File) {
+    return this.authService.uploadKYCSelfie(userId, file);
   }
-
-  // @Post('2fa-activation')
-  // async() {
-  //   return this.authService.initUser(credentials);
-  // }
 
   @UseGuards(RefreshTokenGuard)
   @Get('refresh')
