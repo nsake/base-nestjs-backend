@@ -1,13 +1,16 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import helmet from 'helmet';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 
-import helmet from 'helmet';
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
+
+import multipart from '@fastify/multipart';
 import fastifyCsrf from '@fastify/csrf-protection';
-import { ValidationPipe } from '@nestjs/common';
+
+import { AppModule } from './app.module';
 import { RedisIoAdapter } from './adapters/adapters/RedisIoAdapter';
 
 async function bootstrap() {
@@ -28,8 +31,13 @@ async function bootstrap() {
     credentials: true,
   });
 
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
+
   app.use(helmet());
 
+  await app.register(multipart);
   await app.register(fastifyCsrf);
 
   const redisIoAdapter = new RedisIoAdapter(app);

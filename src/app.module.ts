@@ -7,6 +7,7 @@ import { UserModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CountersModule } from './modules/helpers/counters/counters.module';
+import { AwsModule } from './modules/helpers/aws/aws.module';
 
 @Module({
   imports: [
@@ -34,6 +35,8 @@ import { CountersModule } from './modules/helpers/counters/counters.module';
       }),
       inject: [ConfigService],
     }),
+
+    AwsModule,
 
     CountersModule,
     SocketModule,
