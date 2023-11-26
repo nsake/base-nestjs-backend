@@ -25,15 +25,19 @@ export const getKeyForAwsImage = (image) => {
 
 @Injectable()
 export class AwsService {
-  async uploadFileWithS3(file) {
+  s3;
+
+  constructor() {
     aws.config.update({
+      region: 'us-east-1',
       accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
-      region: 'us-east-1',
     });
 
-    const s3 = new aws.S3();
+    this.s3 = new aws.S3();
+  }
 
+  async uploadFileWithS3(file) {
     const params = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
       Key: `${Date.now()}`,
@@ -41,7 +45,7 @@ export class AwsService {
       ContentType: file.mimetype,
     };
 
-    const uploadedImage = await s3
+    const uploadedImage = await this.s3
       .upload(params, async (err, data) => {
         if (err) {
           throw err;
@@ -53,22 +57,15 @@ export class AwsService {
     return uploadedImage.Location as string;
   }
 
-  // ! Finish with delete
-  async deleteFileWithS3(fileName: string) {
-    aws.config.update({
-      accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
-      region: 'eu-central-1',
-    });
-
-    const s3 = new aws.S3();
+  async deleteFileWithS3(fileUrl: string) {
+    const fileName = getKeyForAwsImage(fileUrl);
 
     const params = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
       Key: fileName,
     };
 
-    return await s3
+    return await this.s3
       .deleteObject(params, async (err, data) => {
         if (err) {
           throw err;
