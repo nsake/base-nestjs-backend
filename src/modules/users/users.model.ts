@@ -54,21 +54,29 @@ export class User {
   @Prop()
   telegram: string;
 
-  @Prop()
-  passwordHash: string;
+  @Prop({
+    select: false,
+  })
+  password: string;
 
   @Prop({ default: null })
   avatar?: string;
 
+  @Prop({ default: null })
+  kycSelfie?: string;
+
   @Prop({ type: String, enum: EUserRole })
   role: EUserRole;
 
-  @Prop()
+  @Prop({
+    select: false,
+  })
   refreshToken: string;
 
   @Prop({
     ref: User.name,
     type: [mongoose.Schema.Types.ObjectId],
+    select: false,
   })
   referrals: [User];
 
@@ -76,10 +84,11 @@ export class User {
     ref: User.name,
     type: mongoose.Schema.Types.ObjectId,
     default: null,
+    select: false,
   })
   parentReferral: User;
 
-  @Prop({ nullable: true })
+  @Prop({ nullable: true, select: false })
   twoFactorAuthSecret?: string;
 
   @Prop()

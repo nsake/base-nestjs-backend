@@ -18,6 +18,7 @@ import { CountersModule } from '../helpers/counters/counters.module';
           schema.pre('save', async function () {
             if (this.isModified('password')) {
               const hash = await Password.toHash(this.get('password'));
+
               this.set('password', hash);
             }
           });

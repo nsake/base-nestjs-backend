@@ -25,19 +25,19 @@ export class UsersService {
     return createdUser.save();
   }
 
-  async findById(id: string) {
+  findById(id: string) {
     return this.userModel.findById(id);
   }
 
-  async findByEmail(email: string) {
+  findByEmail(email: string) {
     return this.userModel.findOne({ email });
   }
 
-  async findWithQuery(query: FilterQuery<User>) {
+  findWithQuery(query: FilterQuery<User>) {
     return this.userModel.findOne(query);
   }
 
-  async findOneByIdAndUpdate(id: string, updateUserDto: Partial<User>) {
+  findOneByIdAndUpdate(id: string, updateUserDto: Partial<User>) {
     return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
   }
 }
