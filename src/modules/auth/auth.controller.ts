@@ -1,13 +1,4 @@
-import { FastifyRequest } from 'fastify';
-import {
-  Controller,
-  Post,
-  UseGuards,
-  Body,
-  Get,
-  Req,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Req, Get, Post, Body, UseGuards, Controller } from '@nestjs/common';
 
 import { SignUpDto } from './auth.dto';
 import { AuthService } from './auth.service';

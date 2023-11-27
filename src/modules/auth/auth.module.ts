@@ -9,6 +9,8 @@ import { UserModule } from '..//users/users.module';
 import { TokensService } from './tokens.service';
 import { AccessTokenStrategy, RefreshTokenStrategy } from './auth.strategies';
 import { AwsModule } from '../helpers/aws/aws.module';
+import { TwoFaController } from './2fa.controller';
+import { TwoFaService } from './2fa.service';
 
 @Module({
   imports: [
@@ -25,9 +27,10 @@ import { AwsModule } from '../helpers/aws/aws.module';
     AwsModule,
     UserModule,
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, TwoFaController],
   providers: [
     AuthService,
+    TwoFaService,
     TokensService,
 
     // LocalStrategy,

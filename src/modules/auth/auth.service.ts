@@ -55,7 +55,7 @@ export class AuthService {
    */
   async uploadKYCSelfie(userId: string, file: File) {
     return new Promise(async (resolve, reject) => {
-      const user = await this.userService.findById(userId);
+      const user = await this.userService.findById(userId).select('kycSelfie');
 
       if (user.kycSelfie) reject('KYC selfie were already uploaded');
 

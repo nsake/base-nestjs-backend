@@ -62,7 +62,7 @@ export class User {
   @Prop({ default: null })
   avatar?: string;
 
-  @Prop({ default: null })
+  @Prop({ default: null, select: false })
   kycSelfie?: string;
 
   @Prop({ type: String, enum: EUserRole })
@@ -90,6 +90,9 @@ export class User {
 
   @Prop({ nullable: true, select: false })
   twoFactorAuthSecret?: string;
+
+  @Prop({ nullable: true, select: false })
+  otpUrl?: string;
 
   @Prop()
   created_at: string;
