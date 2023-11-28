@@ -8,14 +8,15 @@ import { AuthModule } from './modules/auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CountersModule } from './modules/helpers/counters/counters.module';
 import { AwsModule } from './modules/helpers/aws/aws.module';
+import { EmailModule } from './modules/helpers/email/email.module';
 
 @Module({
   imports: [
     ThrottlerModule.forRoot({
       throttlers: [
         {
-          ttl: 60,
-          limit: 10,
+          ttl: 60000,
+          limit: 30,
         },
       ],
     }),
@@ -37,7 +38,7 @@ import { AwsModule } from './modules/helpers/aws/aws.module';
     }),
 
     AwsModule,
-
+    EmailModule,
     CountersModule,
     SocketModule,
 

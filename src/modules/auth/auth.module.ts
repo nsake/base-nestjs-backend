@@ -11,6 +11,7 @@ import { AccessTokenStrategy, RefreshTokenStrategy } from './auth.strategies';
 import { AwsModule } from '../helpers/aws/aws.module';
 import { TwoFaController } from './2fa.controller';
 import { TwoFaService } from './2fa.service';
+import { EmailModule } from '../helpers/email/email.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { TwoFaService } from './2fa.service';
 
     AwsModule,
     UserModule,
+    EmailModule,
   ],
   controllers: [AuthController, TwoFaController],
   providers: [

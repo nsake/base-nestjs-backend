@@ -73,6 +73,7 @@ export class User {
   })
   refreshToken: string;
 
+  // Referrals
   @Prop({
     ref: User.name,
     type: [mongoose.Schema.Types.ObjectId],
@@ -88,11 +89,19 @@ export class User {
   })
   parentReferral: User;
 
+  // TwoFa
   @Prop({ nullable: true, select: false })
   twoFactorAuthSecret?: string;
 
   @Prop({ nullable: true, select: false })
   otpUrl?: string;
+
+  // Email
+  @Prop({ nullable: true, select: true })
+  isEmailConfirmed?: boolean;
+
+  @Prop({ nullable: true, select: false })
+  emailToken?: string;
 
   @Prop()
   created_at: string;

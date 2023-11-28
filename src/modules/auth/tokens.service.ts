@@ -6,6 +6,7 @@ import { UsersService } from '../users/users.service';
 
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { TEndWithMinutes } from 'src/infrastructure/types/custom.types';
 
 @Injectable()
 export class TokensService {
@@ -14,6 +15,20 @@ export class TokensService {
     private usersService: UsersService,
     private configService: ConfigService,
   ) {}
+
+  public async generateCustomToken(payload: any, expiresIn: TEndWithMinutes) {
+    return this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_SECRET_KEY'),
+      expiresIn,
+    });
+  }
+
+  public async verifyCustomToken(token: any) {
+    return this.jwtService.verifyAsync(token, {
+      secret: this.configService.get<string>('JWT_SECRET_KEY'),
+    });
+  }
+
   public async generateTokensAndUpdate(user) {
     const tokens = await this.generateTokens(user._id, user.email);
 

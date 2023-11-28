@@ -20,8 +20,6 @@ export class TwoFaService {
     if (user.twoFactorAuthSecret)
       throw new ForbiddenException('2FA were already generated');
 
-    console.log(user);
-
     const secret = authenticator.generateSecret();
     const app_name = process.env.TWO_FACTOR_AUTHENTICATION_APP_NAME;
     const otpAuthUrl = authenticator.keyuri(user.email, app_name, secret);

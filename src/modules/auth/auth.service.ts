@@ -1,20 +1,25 @@
 import {
   BadRequestException,
+  ForbiddenException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { SignUpDto } from './auth.dto';
-import { UsersService } from '../users/users.service';
+
 import { TokensService } from './tokens.service';
+import { UsersService } from '../users/users.service';
 import { AwsService } from '../helpers/aws/aws.service';
+import { EmailService } from '../helpers/email/email.service';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class AuthService {
   constructor(
     private awsService: AwsService,
     private userService: UsersService,
+    private emailService: EmailService,
     private tokenService: TokensService,
   ) {}
 
@@ -90,5 +95,67 @@ export class AuthService {
           reason || 'Failed uploading file to aws',
         );
       });
+  }
+
+  /**
+   * Requests confirm email
+   *
+   * @param {string} userId
+   *
+   * @return {Promise<Error | void>} void
+   */
+  public async requestConfirmEmail(userId: string) {
+    const user = await this.userService.findById(userId).select({
+      isEmailConfirmed: true,
+      emailToken: true,
+      email: true,
+    });
+
+    if (user.isEmailConfirmed)
+      throw new ForbiddenException('Email is already confirmed');
+
+    if (!user.emailToken)
+      return await this.sendConfirmationEmail(userId, user.email);
+
+    try {
+      const decodedToken = await this.tokenService.verifyCustomToken(
+        user.emailToken,
+      );
+
+      if (dayjs().isAfter(dayjs(decodedToken.iat).add(1, 'm')))
+        return await this.sendConfirmationEmail(userId, user.email);
+
+      return new ForbiddenException('Resend timeout 1 minute');
+    } catch (err) {
+      if (err?.message.includes('expired'))
+        return await this.sendConfirmationEmail(userId, user.email);
+    }
+  }
+
+  public async confirmEmail(token: string) {
+    try {
+      const decodedToken = await this.tokenService.verifyCustomToken(token);
+
+      const user = await this.userService.findByEmail(decodedToken.email);
+
+      if (!user) return new ForbiddenException('Invalid token');
+
+      await this.userService.findOneByIdAndUpdate(user.id, {
+        isEmailConfirmed: true,
+      });
+    } catch (err) {
+      return new ForbiddenException('Token has been expired');
+    }
+  }
+
+  private async sendConfirmationEmail(userId: string, email: string) {
+    const emailToken = await this.tokenService.generateCustomToken(
+      { email },
+      '30m',
+    );
+
+    await this.userService.findOneByIdAndUpdate(userId, { emailToken });
+
+    await this.emailService.sendConfirmationCodeMail(email, emailToken);
   }
 }
