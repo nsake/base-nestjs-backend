@@ -8,7 +8,7 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { SignUpDto } from './auth.dto';
+import { SignInDto, SignUpDto } from './auth.dto';
 import { AuthService } from './auth.service';
 import { TokensService } from './tokens.service';
 
@@ -24,17 +24,20 @@ export class AuthController {
     private tokenService: TokensService,
   ) {}
 
+  // Step 1
   @Post('init-user')
   async initUser(@Body() credentials: SignUpDto) {
     return this.authService.initUserAndAuth(credentials);
   }
 
+  // Step 2
   @UseGuards(AccessTokenGuard)
   @Post('upload-kyc-selfie')
   async uploadKYCSelfie(@CurrentUser('id') userId: string, @File() file: File) {
     return this.authService.uploadKYCSelfie(userId, file);
   }
 
+  // Step 3
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @UseGuards(AccessTokenGuard)
   @Get('request-email-confirmation')
@@ -42,10 +45,16 @@ export class AuthController {
     return this.authService.requestConfirmEmail(userId);
   }
 
+  // Step 4
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Get('confirm-email')
   async confirmEmail(@Query('token') token: string) {
     return this.authService.confirmEmail(token);
+  }
+
+  @Post('sign-in')
+  async signIn(@Body() credentials: SignInDto) {
+    return this.authService.signIn(credentials);
   }
 
   @UseGuards(RefreshTokenGuard)

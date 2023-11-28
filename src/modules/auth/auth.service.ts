@@ -6,19 +6,22 @@ import {
   InternalServerErrorException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { SignUpDto } from './auth.dto';
+import { SignInDto, SignUpDto } from './auth.dto';
 
 import { TokensService } from './tokens.service';
 import { UsersService } from '../users/users.service';
 import { AwsService } from '../helpers/aws/aws.service';
 import { EmailService } from '../helpers/email/email.service';
 import dayjs from 'dayjs';
+import { Password } from 'src/infrastructure/utils/password.util';
+import { TwoFaService } from './2fa.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private awsService: AwsService,
     private userService: UsersService,
+    private twoFaService: TwoFaService,
     private emailService: EmailService,
     private tokenService: TokensService,
   ) {}
@@ -144,7 +147,11 @@ export class AuthService {
         isEmailConfirmed: true,
       });
     } catch (err) {
-      return new ForbiddenException('Token has been expired');
+      if (err?.message?.includes('invalid token'))
+        return new ForbiddenException('Invalid token');
+
+      if (err?.message?.includes('expired'))
+        return new ForbiddenException('Token has been expired');
     }
   }
 
@@ -157,5 +164,52 @@ export class AuthService {
     await this.userService.findOneByIdAndUpdate(userId, { emailToken });
 
     await this.emailService.sendConfirmationCodeMail(email, emailToken);
+  }
+
+  /**
+   * Sign-in process with login and password
+   *
+   * @param {string} login email or phone
+   * @param {string} password password
+   *
+   *
+   * @return {object(string, string)} tokens: {accessToken: string, refreshToken: string}
+   */
+  async signIn(credentials: SignInDto) {
+    try {
+      const user = await this.userService
+        .findWithQuery({
+          $or: [{ phone: credentials.login }, { email: credentials.login }],
+        })
+        .select({
+          password: true,
+          email: true,
+          twoFactorAuthSecret: true,
+        });
+
+      if (!user) throw new BadRequestException('Incorrect credentials');
+
+      const isTwoFactorValid = this.twoFaService.verifyTwoFaCode(
+        credentials.otpCode,
+        user.twoFactorAuthSecret,
+      );
+
+      if (!isTwoFactorValid)
+        throw new BadRequestException('Invalid two factor code');
+
+      const isPasswordsEqual = await Password.compare(
+        user.password,
+        credentials.password,
+      );
+
+      if (!isPasswordsEqual)
+        throw new BadRequestException('Incorrect credentials');
+
+      return this.tokenService.generateTokensAndUpdate(user);
+    } catch (err) {
+      throw new InternalServerErrorException(
+        'Authentication service is not available now, try later',
+      );
+    }
   }
 }
