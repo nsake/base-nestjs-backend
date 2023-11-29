@@ -4,14 +4,7 @@ import mongoose, { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 //! //
-//!
-//!  Add roles module for custom (ask)
-//!  Add aws module for media streaming
-//!  Add counter module
 //!  Search options
-//!  Finish auth module (socket + https, refactor for fastify(?) )
-//!  Add pipe for verification and validation fields
-//!
 //! //
 
 import { EUserRole } from 'src/infrastructure/enums/role.enum';
