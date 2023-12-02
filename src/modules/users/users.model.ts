@@ -3,10 +3,6 @@ import { v4 as uuidV4 } from 'uuid';
 import mongoose, { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-//! //
-//!  Search options
-//! //
-
 import { EUserRole } from 'src/infrastructure/enums/role.enum';
 
 export type UserDocument = User & Document;
@@ -17,6 +13,7 @@ export type UserDocument = User & Document;
   toJSON: {
     transform(doc, ret) {
       ret.id = doc._id.toString();
+
       return omit(ret, ['_id', '__v']);
     },
   },
@@ -47,9 +44,7 @@ export class User {
   @Prop()
   telegram: string;
 
-  @Prop({
-    select: false,
-  })
+  @Prop({ select: false })
   password: string;
 
   @Prop({ default: null })
@@ -61,9 +56,7 @@ export class User {
   @Prop({ type: String, enum: EUserRole })
   role: EUserRole;
 
-  @Prop({
-    select: false,
-  })
+  @Prop({ select: false })
   refreshToken: string;
 
   // Referrals

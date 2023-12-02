@@ -5,6 +5,7 @@ import { UsersService } from './users.service';
 import { User, UserSchema } from './users.model';
 import { Password } from 'src/infrastructure/utils/password.util';
 import { CountersModule } from '../helpers/counters/counters.module';
+import { UsersController } from './users.controller';
 
 @Module({
   imports: [
@@ -30,5 +31,6 @@ import { CountersModule } from '../helpers/counters/counters.module';
   ],
   exports: [UsersService],
   providers: [UsersService],
+  controllers: [UsersController],
 })
 export class UserModule {}

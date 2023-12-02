@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import {
   BadRequestException,
   ForbiddenException,
@@ -12,7 +13,6 @@ import { TokensService } from './tokens.service';
 import { UsersService } from '../users/users.service';
 import { AwsService } from '../helpers/aws/aws.service';
 import { EmailService } from '../helpers/email/email.service';
-import dayjs from 'dayjs';
 import { Password } from 'src/infrastructure/utils/password.util';
 import { TwoFaService } from './2fa.service';
 
@@ -207,6 +207,8 @@ export class AuthService {
 
       return this.tokenService.generateTokensAndUpdate(user);
     } catch (err) {
+      console.log('err', err);
+
       throw new InternalServerErrorException(
         'Authentication service is not available now, try later',
       );

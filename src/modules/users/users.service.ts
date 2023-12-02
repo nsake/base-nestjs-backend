@@ -4,6 +4,8 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { User, UserDocument } from './users.model';
 import { CountersService } from '../helpers/counters/counters.service';
+import { makePagination } from 'src/infrastructure/utils/pagination.util';
+import { TPaginationOption } from 'src/infrastructure/types/pagination.types';
 
 @Injectable()
 export class UsersService {
@@ -26,6 +28,7 @@ export class UsersService {
   }
 
   findById(id: string) {
+    this.userModel.aggregate;
     return this.userModel.findById(id);
   }
 
@@ -39,5 +42,9 @@ export class UsersService {
 
   findOneByIdAndUpdate(id: string, updateUserDto: Partial<User>) {
     return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
+  }
+
+  findWithPagination({ page, pageSize }: TPaginationOption) {
+    return makePagination.call({ page, pageSize }, this.userModel);
   }
 }
