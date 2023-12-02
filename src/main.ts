@@ -11,7 +11,7 @@ import multipart from '@fastify/multipart';
 import fastifyCsrf from '@fastify/csrf-protection';
 
 import { AppModule } from './app.module';
-import { RedisIoAdapter } from './adapters/adapters/RedisIoAdapter';
+import { RedisIoAdapter } from './adapters/RedisIoAdapter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(

@@ -6,6 +6,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { ForbiddenException, INestApplicationContext } from '@nestjs/common';
 
 import { AuthService } from 'src/modules/auth/auth.service';
+import { ConfigService } from '@nestjs/config';
 
 export class RedisIoAdapter extends IoAdapter {
   private adapterConstructor: ReturnType<typeof createAdapter>;
@@ -15,7 +16,15 @@ export class RedisIoAdapter extends IoAdapter {
   }
 
   async connectToRedis(): Promise<void> {
-    const pubClient = createClient({ url: `redis://localhost:6379` });
+    const configService = this.app.get(ConfigService);
+
+    const pubClient = createClient({
+      socket: {
+        host: configService.get('REDIS_HOST'),
+        port: configService.get('REDIS_PORT'),
+      },
+    });
+
     const subClient = pubClient.duplicate();
 
     await Promise.all([pubClient.connect(), subClient.connect()]);

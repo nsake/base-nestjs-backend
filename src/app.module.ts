@@ -9,6 +9,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CountersModule } from './modules/helpers/counters/counters.module';
 import { AwsModule } from './modules/helpers/aws/aws.module';
 import { EmailModule } from './modules/helpers/email/email.module';
+import { RedisPropagatorModule } from './adapters/redis-propagator/redis-propagator.module';
 
 @Module({
   imports: [
@@ -41,6 +42,8 @@ import { EmailModule } from './modules/helpers/email/email.module';
     EmailModule,
     CountersModule,
     SocketModule,
+
+    RedisPropagatorModule,
 
     UserModule,
     AuthModule,
