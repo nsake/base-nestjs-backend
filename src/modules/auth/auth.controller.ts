@@ -24,6 +24,8 @@ export class AuthController {
     private tokenService: TokensService,
   ) {}
 
+  //Registration
+
   // Step 1
   @Post('init-user')
   async initUser(@Body() credentials: SignUpDto) {
@@ -51,6 +53,8 @@ export class AuthController {
   async confirmEmail(@Query('token') token: string) {
     return this.authService.confirmEmail(token);
   }
+
+  // ****** //
 
   @Post('sign-in')
   async signIn(@Body() credentials: SignInDto) {
