@@ -3,9 +3,7 @@ import { AccessTokenGuard } from 'src/infrastructure/guards/acess_token.guard';
 import { UsersService } from './users.service';
 
 import { SchemaValidationPipe } from 'src/infrastructure/pipes/schema_validation.pipe';
-import { CurrentUser } from 'src/infrastructure/decorators/current-user.decorator';
 import { TPaginationOptionDto } from 'src/infrastructure/dtos/pagintaion.dto';
-import { ChangePasswordUserDto } from './dtos/update-user.dto';
 
 @Controller('users')
 export class UsersController {
