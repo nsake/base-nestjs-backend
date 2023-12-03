@@ -10,17 +10,11 @@ import * as qrcode from 'qrcode';
 
 @Controller('2fa')
 export class TwoFaController {
-  constructor(
-    private twoFaService: TwoFaService,
-    private userService: UsersService,
-  ) {}
+  constructor(private twoFaService: TwoFaService, private userService: UsersService) {}
 
   @UseGuards(AccessTokenGuard)
   @Post('generate-2fa-qr')
-  async generateQrCode(
-    @Res() response: Response,
-    @CurrentUser('id') userId: string,
-  ) {
+  async generateQrCode(@Res() response: Response, @CurrentUser('id') userId: string) {
     const { otpAuthUrl } = await this.twoFaService.generateOtpAuth(userId);
 
     response.type('image/png');
@@ -36,17 +30,9 @@ export class TwoFaController {
 
   @UseGuards(AccessTokenGuard)
   @Post('verify-2fa')
-  async verifyOtpAuth(
-    @CurrentUser('id') userId: string,
-    @Body() payload: VerifyTwoFaCodeDto,
-  ) {
-    const user = await this.userService
-      .findById(userId)
-      .select('twoFactorAuthSecret');
+  async verifyOtpAuth(@CurrentUser('id') userId: string, @Body() payload: VerifyTwoFaCodeDto) {
+    const user = await this.userService.findById(userId).select('twoFactorAuthSecret');
 
-    return this.twoFaService.verifyTwoFaCode(
-      payload.code,
-      user.twoFactorAuthSecret,
-    );
+    return this.twoFaService.verifyTwoFaCode(payload.otpCode, user.twoFactorAuthSecret);
   }
 }

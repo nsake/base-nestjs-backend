@@ -14,11 +14,9 @@ export class TwoFaService {
       .select('twoFactorAuthSecret')
       .select('email');
 
-    if (!user.kycSelfie)
-      throw new ForbiddenException('KYC selfie should be provided first');
+    if (!user.kycSelfie) throw new ForbiddenException('KYC selfie should be provided first');
 
-    if (user.twoFactorAuthSecret)
-      throw new ForbiddenException('2FA were already generated');
+    if (user.twoFactorAuthSecret) throw new ForbiddenException('2FA were already generated');
 
     const secret = authenticator.generateSecret();
     const app_name = process.env.TWO_FACTOR_AUTHENTICATION_APP_NAME;

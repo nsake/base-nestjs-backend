@@ -8,6 +8,12 @@ import {
   Length,
 } from 'class-validator';
 
+export class OtpCodeDto {
+  @IsNotEmpty()
+  @IsString()
+  @Length(6, 6, { message: 'Should be 6 symbols' })
+  otpCode: string;
+}
 export class SignUpDto {
   @IsNotEmpty()
   @IsString()
@@ -33,7 +39,7 @@ export class SignUpDto {
   phone: string;
 }
 
-export class SignInDto {
+export class SignInDto extends OtpCodeDto {
   @IsNotEmpty()
   @IsString()
   login: string;
@@ -43,16 +49,6 @@ export class SignInDto {
   @MinLength(6, { message: 'Min password length 6 symbols' })
   @MaxLength(30, { message: 'Max password length 30 symbols' })
   password: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @Length(6, 6, { message: 'Should be 6 symbols' })
-  otpCode: string;
 }
 
-export class VerifyTwoFaCodeDto {
-  @IsNotEmpty()
-  @IsString()
-  @Length(6, 6, { message: 'Should be 6 symbols' })
-  code: string;
-}
+export class VerifyTwoFaCodeDto extends OtpCodeDto {}

@@ -28,7 +28,6 @@ export class UsersService {
   }
 
   findById(id: string) {
-    this.userModel.aggregate;
     return this.userModel.findById(id);
   }
 

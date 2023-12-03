@@ -1,12 +1,4 @@
-import {
-  Req,
-  Get,
-  Post,
-  Body,
-  UseGuards,
-  Controller,
-  Query,
-} from '@nestjs/common';
+import { Req, Get, Post, Body, UseGuards, Controller, Query } from '@nestjs/common';
 
 import { SignInDto, SignUpDto } from './auth.dto';
 import { AuthService } from './auth.service';
@@ -19,10 +11,7 @@ import { AccessTokenGuard } from 'src/infrastructure/guards/acess_token.guard';
 import { Throttle } from '@nestjs/throttler';
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private tokenService: TokensService,
-  ) {}
+  constructor(private authService: AuthService, private tokenService: TokensService) {}
 
   //Registration
 
@@ -64,9 +53,7 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @Get('refresh')
   refreshTokens(@Req() req: any) {
-    const refreshToken = req.headers['authorization']
-      .replace('Bearer', '')
-      .trim();
+    const refreshToken = req.headers['authorization'].replace('Bearer', '').trim();
 
     return this.tokenService.refreshTokens(req.user.id, refreshToken);
   }

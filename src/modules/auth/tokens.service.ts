@@ -38,17 +38,11 @@ export class TokensService {
   }
 
   public async refreshTokens(userId: string, refreshToken: string) {
-    const user = await this.usersService
-      .findById(userId)
-      .select('refreshToken');
+    const user = await this.usersService.findById(userId).select('refreshToken');
 
-    if (!user || !user.refreshToken)
-      throw new ForbiddenException('Access Denied');
+    if (!user || !user.refreshToken) throw new ForbiddenException('Access Denied');
 
-    const refreshTokenMatches = await argon2.verify(
-      user.refreshToken,
-      refreshToken,
-    );
+    const refreshTokenMatches = await argon2.verify(user.refreshToken, refreshToken);
 
     if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
 
