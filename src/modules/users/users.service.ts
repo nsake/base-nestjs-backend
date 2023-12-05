@@ -43,7 +43,7 @@ export class UsersService {
     return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
   }
 
-  findWithPagination({ page, pageSize }: TPaginationOption) {
-    return makePagination.call({ page, pageSize }, this.userModel);
+  findWithPagination(query: TPaginationOption) {
+    return makePagination.call(query, this.userModel);
   }
 }

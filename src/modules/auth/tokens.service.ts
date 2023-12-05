@@ -75,7 +75,7 @@ export class TokensService {
         },
         {
           secret: this.configService.get<string>('JWT_SECRET_KEY'),
-          expiresIn: '6h',
+          expiresIn: '100d',
         },
       ),
 
@@ -86,7 +86,7 @@ export class TokensService {
         },
         {
           secret: this.configService.get<string>('JWT_SECRET_KEY'),
-          expiresIn: '7d',
+          expiresIn: '200d',
         },
       ),
     ]);

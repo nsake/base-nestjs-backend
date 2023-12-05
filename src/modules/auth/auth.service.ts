@@ -43,10 +43,7 @@ export class AuthService {
       $or: [{ phone: credentials.phone }, { email: credentials.email }],
     });
 
-    if (duplicated)
-      throw new BadRequestException(
-        'Such phone number or email is already exists',
-      );
+    if (duplicated) throw new BadRequestException('Such phone number or email is already exists');
 
     const user = await this.userService.create(credentials);
 
@@ -81,9 +78,7 @@ export class AuthService {
           if (!isSaved) {
             await this.awsService.deleteFileWithS3(kycSelfie);
 
-            throw new UnprocessableEntityException(
-              'Can not save uploaded image to database now',
-            );
+            throw new UnprocessableEntityException('Can not save uploaded image to database now');
           }
 
           return HttpStatus.OK;
@@ -94,9 +89,7 @@ export class AuthService {
         }
       })
       .catch((reason: string) => {
-        throw new InternalServerErrorException(
-          reason || 'Failed uploading file to aws',
-        );
+        throw new InternalServerErrorException(reason || 'Failed uploading file to aws');
       });
   }
 
@@ -114,16 +107,12 @@ export class AuthService {
       email: true,
     });
 
-    if (user.isEmailConfirmed)
-      throw new ForbiddenException('Email is already confirmed');
+    if (user.isEmailConfirmed) throw new ForbiddenException('Email is already confirmed');
 
-    if (!user.emailToken)
-      return await this.sendConfirmationEmail(userId, user.email);
+    if (!user.emailToken) return await this.sendConfirmationEmail(userId, user.email);
 
     try {
-      const decodedToken = await this.tokenService.verifyCustomToken(
-        user.emailToken,
-      );
+      const decodedToken = await this.tokenService.verifyCustomToken(user.emailToken);
 
       if (dayjs().isAfter(dayjs(decodedToken.iat).add(1, 'm')))
         return await this.sendConfirmationEmail(userId, user.email);
@@ -147,8 +136,7 @@ export class AuthService {
         isEmailConfirmed: true,
       });
     } catch (err) {
-      if (err?.message?.includes('invalid token'))
-        return new ForbiddenException('Invalid token');
+      if (err?.message?.includes('invalid token')) return new ForbiddenException('Invalid token');
 
       if (err?.message?.includes('expired'))
         return new ForbiddenException('Token has been expired');
@@ -156,10 +144,7 @@ export class AuthService {
   }
 
   private async sendConfirmationEmail(userId: string, email: string) {
-    const emailToken = await this.tokenService.generateCustomToken(
-      { email },
-      '30m',
-    );
+    const emailToken = await this.tokenService.generateCustomToken({ email }, '30m');
 
     await this.userService.findOneByIdAndUpdate(userId, { emailToken });
 
@@ -187,23 +172,18 @@ export class AuthService {
           twoFactorAuthSecret: true,
         });
 
-      if (!user) throw new BadRequestException('Incorrect credentials');
+      if (!user) return new BadRequestException('Incorrect credentials');
 
       const isTwoFactorValid = this.twoFaService.verifyTwoFaCode(
         credentials.otpCode,
         user.twoFactorAuthSecret,
       );
 
-      if (!isTwoFactorValid)
-        throw new BadRequestException('Invalid two factor code');
+      if (!isTwoFactorValid) return new BadRequestException('Invalid two factor code');
 
-      const isPasswordsEqual = await Password.compare(
-        user.password,
-        credentials.password,
-      );
+      const isPasswordsEqual = await Password.compare(user.password, credentials.password);
 
-      if (!isPasswordsEqual)
-        throw new BadRequestException('Incorrect credentials');
+      if (!isPasswordsEqual) return new BadRequestException('Incorrect credentials');
 
       return this.tokenService.generateTokensAndUpdate(user);
     } catch (err) {

@@ -8,7 +8,7 @@ import { EUserRole } from 'src/infrastructure/enums/role.enum';
 export type UserDocument = User & Document;
 
 @Schema({
-  timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
+  timestamps: true,
   collection: 'users',
   toJSON: {
     transform(doc, ret) {
