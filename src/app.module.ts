@@ -10,8 +10,6 @@ import { CountersModule } from './modules/helpers/counters/counters.module';
 import { AwsModule } from './modules/helpers/aws/aws.module';
 import { EmailModule } from './modules/helpers/email/email.module';
 import { RedisPropagatorModule } from './adapters/redis-propagator/redis-propagator.module';
-import { AdminModule } from './modules/admin/admin.module';
-import { InvestmentsModule } from './modules/investments/investments.module';
 
 @Module({
   imports: [
@@ -49,8 +47,7 @@ import { InvestmentsModule } from './modules/investments/investments.module';
 
     UserModule,
     AuthModule,
-    AdminModule,
-    InvestmentsModule,
+    ,
   ],
 })
 export class AppModule {}
