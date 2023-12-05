@@ -11,7 +11,7 @@ import { AwsModule } from './modules/helpers/aws/aws.module';
 import { EmailModule } from './modules/helpers/email/email.module';
 import { RedisPropagatorModule } from './adapters/redis-propagator/redis-propagator.module';
 import { AdminModule } from './modules/admin/admin.module';
-import { UsersModule } from './users/users.module';
+import { InvestmentsModule } from './modules/investments/investments.module';
 
 @Module({
   imports: [
@@ -50,7 +50,7 @@ import { UsersModule } from './users/users.module';
     UserModule,
     AuthModule,
     AdminModule,
-    UsersModule,
+    InvestmentsModule,
   ],
 })
 export class AppModule {}
